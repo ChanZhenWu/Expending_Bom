@@ -1,6 +1,6 @@
 print "\n";
 print "*******************************************************************************\n";
-print "  Expending Bom <v1.0>\n";
+print "  Expend devices items <v1.3>\n";
 print "  Author: Noon Chen\n";
 print "  A Professional Tool for Test.\n";
 print "  ",scalar localtime;
@@ -9,19 +9,21 @@ print "\n";
 
 use strict;
 use warnings;
+use List::Util 'uniq';
 
-print "  Please specify source file here: ";
+print "  please specify source file here: ";
    my $source=<STDIN>;
    chomp $source;
 
-print $source;
+#print $source;
 
 ############################### source file process ######################################
 
 print  "\n	>>> Expending ... \n";
-my $number = 0;
+my @bom_list = ();
 
-open (Export, "> new_$source"); 
+my $number = 0;
+open (Export, "> component_list.txt");
 open (Import, "< $source"); 
 	while(my $array = <Import>)
 	{
@@ -33,8 +35,11 @@ open (Import, "< $source");
 		#print scalar@list."\n";
 		for (my $num = 0; $num < scalar@list; $num++)
 			{
-				printf Export $list[$num]."\n";
-				print $list[$num]."\n";
+				$list[$num] =~ s/(^\s+|\s+$)//g;
+				#printf Export $list[$num]."\n";
+				#print $list[$num]."\n";
+				my $dev = lc($list[$num]);
+				my $bom_list = push(@bom_list, $dev."\n");
 				$number++;
 			}
 		}
@@ -85,8 +90,11 @@ open (Import, "< $source");
 					if(length($Comps[0]) - length($string) == 3){$string = substr($Comps[0],0,length($Comps[0])-length($begin))."000".$num;}
 					if(length($Comps[0]) - length($string) == 4){$string = substr($Comps[0],0,length($Comps[0])-length($begin))."0000".$num;}
 					
-					printf Export $string."\n";
-					print $string."\n";
+					$string =~ s/(^\s+|\s+$)//g;
+					#printf Export $string."\n";
+					#print $string."\n";
+					my $dev = lc($string);
+					my $bom_list = push(@bom_list, $dev."\n");
 					$number++;
 				}
 			}
@@ -103,8 +111,11 @@ open (Import, "< $source");
 					if(length($Comps[0]) - length($string) == 3){$string = substr($Comps[0],0,index($Comps[0],$begin))."000".$num.$suffix;}
 					if(length($Comps[0]) - length($string) == 4){$string = substr($Comps[0],0,index($Comps[0],$begin))."0000".$num.$suffix;}
 					
-					printf Export $string."\n";
-					print $string."\n";
+					$string =~ s/(^\s+|\s+$)//g;
+					#printf Export $string."\n";
+					#print $string."\n";
+					my $dev = lc($string);
+					my $bom_list = push(@bom_list, $dev."\n");
 					$number++;
 				}
 			}
@@ -121,35 +132,51 @@ open (Import, "< $source");
 					if(length($Comps[0]) - length($string) == 3){$string = substr($Comps[0],0,length($Comps[0])-length($begin))."000".$num;}
 					if(length($Comps[0]) - length($string) == 4){$string = substr($Comps[0],0,length($Comps[0])-length($begin))."0000".$num;}
 					
-					printf Export $string."\n";
-					print $string."\n";
+					$string =~ s/(^\s+|\s+$)//g;
+					#printf Export $string."\n";
+					#print $string."\n";
+					my $dev = lc($string);
+					my $bom_list = push(@bom_list, $dev."\n");
 					$number++;
 				}
 			}
 		}
 		else
 		{
-		printf Export $fields[$num]."\n";
-		print $fields[$num]."\n";
+		$fields[$num] =~ s/(^\s+|\s+$)//g;
+		#printf Export $fields[$num]."\n";
+		#print $fields[$num]."\n";
+		my $dev = lc($fields[$num]);
+		my $bom_list = push(@bom_list, $dev."\n");
 		$number++;
 			}
 		}
 	}
 	else
 		{
-			print Export $array,"\n";
-			print $array,"\n";
+			$array =~ s/(^\s+|\s+$)//g;
+			#print Export $array,"\n";
+			#print $array,"\n";
+			my $dev = lc($array);
+			my $bom_list = push(@bom_list, $dev."\n");
 			$number++;
 		}
 	}
 	
+
+print "	>>> Done ...\n";
+
 print "\n	BOM count: ".$number."\n";
+
+@bom_list = uniq @bom_list;
+my $length = scalar @bom_list;
+print Export sort @bom_list;
+print "	valid BOM: ", $length,"\n";
+print "\n	output file: component_list.txt\n\n";
 close Import;
 close Export;
 
-print "	>>>done ...\n\n";
-
-
-########################################################@#################################
+system 'pause';
+exit;
 
 
