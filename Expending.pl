@@ -1,6 +1,6 @@
 print "\n";
 print "*******************************************************************************\n";
-print "  Expend devices items <v1.3>\n";
+print "  Expend devices items <v1.4>\n";
 print "  Author: Noon Chen\n";
 print "  A Professional Tool for Test.\n";
 print "  ",scalar localtime;
@@ -29,6 +29,7 @@ open (Import, "< $source");
 	{
 	chomp $array;
 	$array =~ s/\s+//g;	   #clear head of line spacing
+	next if ($array eq "");
 	if ($array =~ "\," and $array !~ "\-")
 		{
 		my @list = split(/,/, $array);
@@ -168,9 +169,10 @@ print "	>>> Done ...\n";
 
 print "\n	BOM count: ".$number."\n";
 
+@bom_list = sort @bom_list;
 @bom_list = uniq @bom_list;
 my $length = scalar @bom_list;
-print Export sort @bom_list;
+print Export @bom_list;
 print "	valid BOM: ", $length,"\n";
 print "\n	output file: component_list.txt\n\n";
 close Import;
@@ -178,5 +180,3 @@ close Export;
 
 system 'pause';
 exit;
-
-
